@@ -1,0 +1,103 @@
+@startuml
+interface ComponentCallbacks2
+
+class Glide {
+
+}
+
+class GlideBuilder {
+
+}
+
+interface BitmapPool {
+
+}
+
+interface MemoryCache {
+
+}
+
+interface ArrayPool {
+
+}
+
+interface LifecycleListener {
+    +void onStart()
+    +void onStop()
+    +void onDestroy()
+}
+
+interface ModelTypes<T> {
+    +T load()
+}
+
+interface RequestListener<R> {
+    +boolean onLoadFailed()
+    +boolean onResourceReady()
+}
+
+enum MemoryCategory {
+    LOW
+    NORMAL
+    HIGH
+    -float multiplier
+}
+
+class Registry {
+
+}
+
+class Engine {
+
+}
+
+class RequestManagerRetriever {
+
+}
+
+class MemorySizeCalculator {
+    -int bitmapPoolSize
+    -int memoryCacheSize
+    -int arrayPoolSize
+}
+
+class RequestOptions {
+
+}
+
+abstract class BaseRequestOptions<T extends BaseRequestOptions<T>> {
+    
+}
+
+interface Key {
+    +void updateDiskCacheKey()
+    +boolean equals(Object o)
+    +int hashCode()
+}
+
+class Options {
+    -ArrayMap<Option<?>, Object> values = new CachedHashCodeArrayMap<>()
+}
+
+class Option<T> {
+    -T defaultValue
+}
+
+
+ComponentCallbacks2 <|.. Glide
+
+ContextWrapper <|-- GlideContext
+
+LifecycleListener <|.. RequestManager
+
+ModelTypes <|.. RequestManager
+
+
+Handler.Callback <|..RequestManagerRetriever
+
+Cloneable <|.. BaseRequestOptions
+
+BaseRequestOptions <|-- RequestOptions
+
+Key <|.. Options
+@enduml
