@@ -1,0 +1,108 @@
+@startuml
+
+interface IMqttAsyncClient {
++IMqttToken connect()
++IMqttToken disconnect()
++boolean isConnected()
++String getClientId()
++String getServerURI()
++IIMqttDeliveryToken publish(String topic, MqttMessage message )
++IMqttToken subscribe(String topicFilter, int qos)
++IMqttToken unsubscribe(String[] topicFilters, Object userContext, IMqttActionListener callback)
++void messageArrivedComplete(int messageId, int qos)
++void close()
+}
+
+class MqttConnectOptions {
+-MqttMessage willMessage
+}
+
+class MqttMessage {
+-byte[] payload
+-int qos
+-int messageId
+}
+
+interface IMqttToken {
++void waitForCompletion()
++boolean isComplete()
++void setActionCallback(IMqttActionListener listener)
++IMqttActionListener getActionCallback()
++IMqttAsyncClient getClient()
++String[] getTopics()
++int getMessageId()
++MqttWireMessage getResponse()
+}
+
+interface IMqttDeliveryToken {
++MqttMessage getMessage()
+}
+
+interface IMqttActionListener {
++void onSuccess(IMqttToken asyncActionToken)
++void onFailure(IMqttToken asyncActionToken, Throwable exception)
+}
+
+interface MqttCallback {
++ void connectionLost(Throwable cause)
++void messageArrived(String topic, MqttMessage message)
++void deliveryComplete(IMqttDeliveryToken token)
+}
+
+class MqttAndroidClient {
+-String serverURI
+-String clientId
+-MqttClientPersistence persistence
+-MqttConnectOptions connectOptions
+-IMqttToken connectToken
+
+-String clientHandle
+}
+
+interface MqttTraceHandler {
++void traceDebug(String tag, String message)
++void traceError(String tag, String message)
+}
+
+class MqttService {
+
+}
+
+interface MqttClientPersistence {
++void open(String clientId, String serverURI)
++void close()
++void put(String key, MqttPersistable persistable)
++MqttPersistable get(String key)
++void remove(String key)
+}
+
+interface MqttPersistable {
++byte[] getPayloadBytes()
+}
+
+class MqttTokenAndroid {
+
+}
+
+class MqttConnection {
+
+}
+
+interface MqttCallbackExtended {
++void connectComplete(boolean reconnect, String serverURI)
+}
+
+IMqttToken <|-- IMqttDeliveryToken
+
+BroadcastReceiver <|-- MqttAndroidClient
+IMqttAsyncClient <|.. MqttAndroidClient
+
+Service <|-- MqttService
+MqttTraceHandler <|.. MqttService
+
+IMqttToken <|.. MqttTokenAndroid
+
+MqttCallback <|-- MqttCallbackExtended
+
+MqttCallbackExtended <|.. MqttConnection
+@enduml
