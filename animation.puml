@@ -1,0 +1,106 @@
+@startuml
+
+abstract class Animation {
+~Interpolator mInterpolator
+~AnimationListener mListener
+-Handler mListenerHandler
+-Runnable mOnStart
+-Runnable mOnRepeat
+-Runnable mOnEnd
+-void fireAnimationStart()
+-void fireAnimationRepeat()
+-void fireAnimationEnd()
+}
+
+interface TimeInterpolator {
++float getInterpolation(float input)
+}
+
+interface Interpolator
+
+interface AnimationListener {
++void onAnimationStart(Animation animation)
++void onAnimationEnd(Animation animation)
++void onAnimationRepeat(Animation animation)
+}
+
+class Transformation {
+#Matrix mMatrix
+#float mAlpha
+#int mTransformationType
+}
+
+
+abstract class BaseInterpolator
+
+class AccelerateDecelerateInterpolator {
++float getInterpolation(float input)
+}
+
+interface NativeInterpolatorFactory
+
+class TranslateAnimation
+class AlphaAnimation
+class RotateAnimation
+class ScaleAnimation
+class AnimationSet {
+- ArrayList<Animation> mAnimations
+}
+
+class AnimationUtils {
++{staic}Animation loadAnimation
+}
+
+abstract class Animator {
+~ArrayList<AnimatorListener> mListeners
+~ArrayList<AnimatorPauseListener> mPauseListeners
++void start()
++void cancel()
++void end()
++void addListener(AnimatorListener listener)
++void removeListener(AnimatorListener listener)
+}
+
+interface AnimatorListener {
++void onAnimationStart(Animator animation)
++void onAnimationEnd(Animator animation)
++void onAnimationCancel(Animator animation)
++void onAnimationRepeat(Animator animation)
+}
+
+class AnimatorSet
+class ValueAnimator
+class ObjectAnimator
+class TimeAnimator
+
+interface AnimationHandler.AnimationFrameCallback {
+~boolean doAnimationFrame(long frameTime)
+~void commitAnimationFrame(long frameTime)
+}
+
+Cloneable <|.. Animation
+Cloneable <|.. Animator
+
+TimeInterpolator<|--Interpolator
+
+Interpolator <|.. BaseInterpolator
+
+BaseInterpolator <|--AccelerateDecelerateInterpolator
+
+NativeInterpolatorFactory <|.. AccelerateDecelerateInterpolator
+
+Animation <|-- TranslateAnimation
+Animation <|-- AlphaAnimation
+Animation <|-- RotateAnimation
+Animation <|-- ScaleAnimation
+Animation <|-- AnimationSet
+
+Animator <|-- ValueAnimator
+Animator <|-- AnimatorSet
+ValueAnimator <|-- ObjectAnimator
+ValueAnimator <|-- TimeAnimator
+
+AnimationHandler.AnimationFrameCallback <|.. ValueAnimator
+AnimationHandler.AnimationFrameCallback <|.. AnimatorSet
+
+@enduml
