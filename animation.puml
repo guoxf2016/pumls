@@ -69,7 +69,9 @@ interface AnimatorListener {
 }
 
 class AnimatorSet
-class ValueAnimator
+class ValueAnimator {
+~PropertyValuesHolder[] mValues
+}
 class ObjectAnimator
 class TimeAnimator
 
@@ -78,8 +80,54 @@ interface AnimationHandler.AnimationFrameCallback {
     ~void commitAnimationFrame(long frameTime)
 }
 
+class AnimationHandler {
+    
+}
+
+class PropertyValuesHolder {
+~String mPropertyName
+~Method mSetter
+-Method mGetter
+~Class mValueType
+~Keyframes mKeyframes
+-TypeEvaluator mEvaluator
+-Object mAnimatedValue
+}
+
+class IntPropertyValuesHolder {
+
+}
+
+class FloatPropertyValuesHolder {
+
+}
+
+interface Keyframes {
++Object getValue(float fraction)
+}
+
+interface IntKeyframes {
++int getIntValue(float fraction)
+}
+
+interface FloatKeyframes {
+    +float getFloatValue(float fraction)
+}
+
+interface TypeEvaluator {
++T evaluate(float fraction, T startValue, T endValue)
+}
+
+
 Cloneable <|.. Animation
 Cloneable <|.. Animator
+Cloneable <|.. PropertyValuesHolder
+Cloneable <|.. Keyframes
+
+Keyframes <|--IntKeyframes
+Keyframes <|--FloatKeyframes
+PropertyValuesHolder <|-- IntPropertyValuesHolder
+PropertyValuesHolder <|--FloatPropertyValuesHolder
 
 TimeInterpolator<|--Interpolator
 
