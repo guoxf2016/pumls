@@ -81,7 +81,29 @@ interface AnimationHandler.AnimationFrameCallback {
 }
 
 class AnimationHandler {
-    
+-AnimationFrameCallbackProvider mProvider
+-Choreographer.FrameCallback mFrameCallback
+}
+
+class MyFrameCallbackProvider {
+
+}
+
+class Choreographer {
+
+}
+
+interface AnimationFrameCallback {
++boolean doAnimationFrame(long frameTime)
++void commitAnimationFrame(long frameTime)
+}
+
+interface AnimationFrameCallbackProvider {
++void postFrameCallback(Choreographer.FrameCallback callback);
++void postCommitCallback(Runnable runnable);
++long getFrameTime();
++long getFrameDelay();
++void setFrameDelay(long delay);
 }
 
 class PropertyValuesHolder {
@@ -150,5 +172,7 @@ ValueAnimator <|-- TimeAnimator
 
 AnimationHandler.AnimationFrameCallback <|.. ValueAnimator
 AnimationHandler.AnimationFrameCallback <|.. AnimatorSet
+
+AnimationFrameCallbackProvider<|..MyFrameCallbackProvider
 
 @enduml
