@@ -1,0 +1,108 @@
+@startuml
+
+package retrofit2 {
+class Retrofit {
+
+}
+
+class Retrofit.Builder {
+    -Platform platform
+    -okhttp3.Call.Factory callFactory
+    -HttpUrl baseUrl
+    -List<Converter.Factory> converterFactories
+    -List<CallAdapter.Factory> callAdapterFactories
+    -Executor callbackExecutor
+    -boolean validateEagerly
+
+    +Builder client(OkHttpClient client)
+    +Builder callFactory(okhttp3.Call.Factory factory)
+}
+
+class Platform {
+    {static}-Platform PLATFORM
+    {static}~Platform get()
+    {static}~Platform findPlatform()
+}
+
+class Java8 {
+
+}
+
+class Android {
+    ~boolean isDefaultMethod(Method method)
+    +Executor defaultCallbackExecutor()
+    ~List<? extends CallAdapter.Factory> defaultCallAdapterFactories(Executor callbackExecutor)
+
+}
+
+interface CallAdapter<R, T> {
+    +Type responseType()
+    +T adapt(Call<R> call)
+}
+abstract class CallAdapter.Factory {
+    {abstract}+CallAdapter<?, ?> get(Type returnType, Annotation[] annotations,Retrofit retrofit)
+}
+
+
+interface Callback<T> {
+    +void onResponse(Call<T> call, Response<T> response)
+    +void onFailure(Call<T> call, Throwable t)
+}
+
+
+interface Converter<F, T> {
+    +T convert(F value)
+}
+
+interface Converter.Factory {
+    +Converter<ResponseBody, ?> responseBodyConverter()
+    +Converter<?, RequestBody> requestBodyConverter()
+}
+
+class BuiltInConverters {
+
+}
+
+Platform <|-- Java8
+Platform <|-- Android
+
+Converter.Factory<|--BuiltInConverters
+}
+
+package okhttp3 {
+class Response<T> {
+
+}
+
+class Request {
+
+}
+interface Call<T> {
+    +Response<T> execute()
+    +void enqueue(Callback<T> callback)
+    +boolean isExecuted()
+    +Request request();
+}
+
+interface Call.Factory {
+    +Call newCall(Request request)
+}
+
+class OkHttpClient {
+    +Call newCall(Request request)
+}
+
+interface WebSocket{
+    +Request request()
+    +boolean send(String text)
+    +boolean send(ByteString bytes)
+}
+
+interface WebSocket.Factory {
+    +WebSocket newWebSocket(Request request, WebSocketListener listener)
+}
+Call.Factory<|..OkHttpClient
+WebSocket.Factory <|..OkHttpClient
+}
+
+@enduml
