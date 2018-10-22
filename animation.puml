@@ -75,15 +75,17 @@ class ValueAnimator {
 class ObjectAnimator
 class TimeAnimator
 
+class AnimationHandler {
+-AnimationFrameCallbackProvider mProvider
+-Choreographer.FrameCallback mFrameCallback
+}
+
 interface AnimationHandler.AnimationFrameCallback {
     ~boolean doAnimationFrame(long frameTime)
     ~void commitAnimationFrame(long frameTime)
 }
 
-class AnimationHandler {
--AnimationFrameCallbackProvider mProvider
--Choreographer.FrameCallback mFrameCallback
-}
+
 
 class MyFrameCallbackProvider {
 
