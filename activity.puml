@@ -1,0 +1,169 @@
+@startuml
+
+abstract class Context {
+
+}
+
+interface AutoCloseable {
+    +void close()
+}
+
+class AssetManager {
+
+}
+
+class Resources {
+
+}
+
+abstract class PackageManager {
+
+}
+
+abstract class ContentResolver {
+
+}
+
+class Configuration {
+
+}
+
+class TypedArray {
+
+}
+
+class PackageItemInfo {
+
+}
+
+class ApplicationInfo {
+
+}
+class ComponentInfo {
+
+}
+
+interface ComponentCallbacks {
+    +void onConfigurationChanged(Configuration newConfig)
+    +void onLowMemory()
+}
+
+interface ComponentCallbacks2 {
+    +void onTrimMemory(@TrimMemoryLevel int level)
+}
+
+class ContextWrapper {
+    #void attachBaseContext(Context base)
+}
+
+class Resources.Theme {
+
+}
+
+abstract class LayoutInflater {
+
+}
+
+interface LayoutInflater.Factory {
+    +View onCreateView(String name, Context context, AttributeSet attrs)
+}
+
+interface LayoutInflater.Factory2 {
+    +View onCreateView(View parent, String name, Context context, AttributeSet attrs)
+}
+
+class ContextThemeWrapper {
+    -int mThemeResource
+    -Resources.Theme mTheme
+}
+
+class ComponentName {
+    -String mPackage
+    -String mClass
+}
+
+class Instrumentation {
+
+}
+
+class LoadedApk {
+
+}
+
+class ActivityInfo {
+    +int theme
+}
+
+class Application {
+    -ArrayList<ComponentCallbacks> mComponentCallbacks
+    -ArrayList<ActivityLifecycleCallbacks> mActivityLifecycleCallbacks
+    +LoadedApk mLoadedApk
+
+    +void onCreate()
+    +void onConfigurationChanged(Configuration newConfig)
+    +void registerComponentCallbacks(ComponentCallbacks callback)
+}
+interface Application.ActivityLifecycleCallbacks {
+    +void onActivityCreated(Activity activity, Bundle savedInstanceState)
+    +void onActivityStarted(Activity activity)
+    +void onActivityResumed(Activity activity)
+}
+
+class ContextImpl {
+
+}
+
+class ActivityThread {
+    +{static}void main(String[] args)
+    -void attach(boolean system)
+}
+
+class ApplicationThread {
+    +void scheduleLaunchActivity
+    +void bindApplication
+}
+
+class ActivityClientRecord {
+
+}
+
+class Activity {
+    -Instrumentation mInstrumentation
+    -IBinder mToken
+    -Application mApplication
+    -Window mWindow
+
+    ~ActivityInfo mActivityInfo
+    ~ActivityThread mMainThread
+    ~Configuration mCurrentConfig
+}
+
+
+AutoCloseable<|..AssetManager
+
+PackageItemInfo<|-- ApplicationInfo
+
+Context<|--ContextWrapper
+
+ContextWrapper<|--ContextThemeWrapper
+
+Context<|--ContextImpl
+
+ComponentCallbacks<|--ComponentCallbacks2
+
+LayoutInflater.Factory2<|--LayoutInflater.Factory
+
+ContextThemeWrapper<|--Activity
+LayoutInflater.Factory2<|..Activity
+ComponentCallbacks2<|..Activity
+
+ContextWrapper<|--Application
+ComponentCallbacks2<|..Application
+
+PackageItemInfo<|--ComponentInfo
+
+ComponentInfo<|--ActivityInfo
+
+IApplicationThread.Stub<|--ApplicationThread
+
+@enduml
