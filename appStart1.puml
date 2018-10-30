@@ -1,0 +1,105 @@
+@startuml
+
+autonumber
+
+[->Launcher : startAppShortcutOrInfoActivity
+Launcher -> Launcher : startActivitySafely
+
+Launcher -> Activity : startActivity
+Activity -> Activity : startActivityForResult
+Activity -> Instrumentation : execStartActivity
+
+Instrumentation -> IActivityManager : startActivity
+note right 
+IActivityManager是
+ActivityManager.getService()
+拿到AMS的Proxy
+end note
+
+IActivityManager ----> ActivityManagerService : (ipc)startActivity
+
+note right
+ActivityManagerService extends 
+IActivityManager.Stub
+是IActivityManager的服务端
+end note
+
+ActivityManagerService -> ActivityManagerService : startActivityAsUser
+
+ActivityManagerService -> ActivityStarter : startActivityMayWait
+
+ActivityStarter -> ActivityStackSupervisor : resolveActivity
+
+ActivityStackSupervisor --> ActivityStarter : ActivityInfo
+
+ActivityStarter -> ActivityStarter : startActivityLocked
+ActivityStarter -> ActivityStarter : startActivity
+
+create ActivityRecord
+ActivityStarter -> ActivityRecord : new
+
+ActivityStarter -> ActivityStarter : startActivity
+ActivityStarter -> ActivityStarter : startActivityUnchecked
+ActivityStarter -> ActivityStarter : setTaskFromReuseOrCreateNewTask
+ActivityStarter -> ActivityStarter : computeStackFocus
+ActivityStarter -> ActivityStackSupervisor : getStack
+ActivityStackSupervisor --> ActivityStarter : activitystack
+ActivityStarter -> ActivityStack : moveToFront
+
+ActivityStarter -> ActivityStackSupervisor : resumeFocusedStackTopActivityLocked
+ActivityStackSupervisor -> ActivityStack : resumeTopActivityUncheckedLocked
+ActivityStack -> ActivityStack : resumeTopActivityInnerLocked
+ActivityStack -> ActivityStackSupervisor : startSpecificActivityLocked
+
+ActivityStackSupervisor -> ActivityManagerService : startProcessLocked
+ActivityManagerService -> ActivityManagerService : startProcessLocked
+ActivityManagerService -> ActivityManagerService : newProcessRecordLocked
+
+create ProcessRecord
+
+ActivityManagerService -> ProcessRecord : new
+
+ProcessRecord --> ActivityManagerService : ProcessRecord
+
+ActivityManagerService -> ActivityManagerService : startProcessLocked
+ActivityManagerService -> Process : start
+
+Process -> ZygoteProcess : start
+note right
+android.app.ActivityThread
+这个类名会传给ZygoteProcess
+end note
+ZygoteProcess -> ZygoteProcess : startViaZygote
+ZygoteProcess -> ZygoteProcess : openZygoteSocketIfNeeded
+ZygoteProcess -> ZygoteProcess : zygoteSendArgsAndGetResult
+note right
+通过socket通信传递参数并获取结果
+end note
+
+[-> ZygoteInit : main
+
+create ZygoteServer
+
+ZygoteInit -> ZygoteServer : new
+
+ZygoteInit -> ZygoteServer : registerServerSocket
+
+create LocalServerSocket
+ZygoteServer -> LocalServerSocket : new 
+
+ZygoteServer -> ZygoteProcess : runSelectLoop
+ZygoteServer -> ZygoteProcess : acceptCommandPeer
+ZygoteServer -> ZygoteProcess : createNewConnection
+create ZygoteConnection
+ZygoteServer -> ZygoteConnection : new 
+ZygoteConnection --> ZygoteServer : ZygoteConnection 
+ZygoteConnection --> ZygoteConnection : processOneCommand 
+
+note right
+后面的过程大概就是fork进程执行，
+执行ZygoteProcess通过socket传递过来的命令和参数
+会调用到android.app.ActivityThread的main方法
+end note
+
+
+@enduml
