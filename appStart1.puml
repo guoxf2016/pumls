@@ -93,7 +93,7 @@ ZygoteServer -> ZygoteProcess : createNewConnection
 create ZygoteConnection
 ZygoteServer -> ZygoteConnection : new 
 ZygoteConnection --> ZygoteServer : ZygoteConnection 
-ZygoteConnection --> ZygoteConnection : processOneCommand 
+ZygoteServer --> ZygoteConnection : processOneCommand 
 
 note right
 后面的过程大概就是fork进程执行，
