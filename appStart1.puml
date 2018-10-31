@@ -40,6 +40,9 @@ ActivityStarter -> ActivityRecord : new
 
 ActivityStarter -> ActivityStarter : startActivity
 ActivityStarter -> ActivityStarter : startActivityUnchecked
+ActivityStarter -> ActivityStarter : setInitialState
+
+
 ActivityStarter -> ActivityStarter : setTaskFromReuseOrCreateNewTask
 ActivityStarter -> ActivityStarter : computeStackFocus
 ActivityStarter -> ActivityStackSupervisor : getStack
@@ -49,6 +52,15 @@ ActivityStarter -> ActivityStack : moveToFront
 ActivityStarter -> ActivityStackSupervisor : resumeFocusedStackTopActivityLocked
 ActivityStackSupervisor -> ActivityStack : resumeTopActivityUncheckedLocked
 ActivityStack -> ActivityStack : resumeTopActivityInnerLocked
+ActivityStack -> ActivityStack : startPausingLocked
+
+note right
+这里会通过IPC调用Laucher的IApplicationThread的schedulePauseActivity
+然后会调用到ActivityThread的handlePauseActivity
+然后Instrumentation.callActivityOnPause
+然后activity.performPause()
+end note
+
 ActivityStack -> ActivityStackSupervisor : startSpecificActivityLocked
 
 ActivityStackSupervisor -> ActivityManagerService : startProcessLocked

@@ -1,0 +1,102 @@
+@startuml
+autonumber
+[-> ActivityThread : main
+
+ActivityThread -> Looper : prepareMainLooper
+ActivityThread -> ActivityThread : new 
+create ApplicationThread
+ActivityThread -> ApplicationThread : new
+
+ActivityThread -> ActivityThread : attach
+ActivityThread -> RuntimeInit : setApplicationObject
+
+ActivityThread -> ActivityManager : getService
+
+ActivityManager --> ActivityThread : IActivityManager
+note right
+拿到AMS的Proxy
+end note
+
+ActivityThread -> IActivityManager : attachApplication
+
+IActivityManager ----> ActivityManagerService : (ipc)attachApplication
+
+ActivityManagerService -> ActivityManagerService : attachApplicationLocked
+
+ActivityManagerService --> IApplicationThread : (ipc)bindApplication
+
+ApplicationThread -> ActivityThread : sendMessage
+
+ActivityThread -> ActivityThread : handleBindApplication
+ActivityThread -> LoadedApk : makeApplication
+
+LoadedApk -> Instrumentation : newApplication
+create Application
+Instrumentation -> Application : attach
+Application ---> LoadedApk : Application
+
+LoadedApk -> Instrumentation : callApplicationOnCreate
+Instrumentation -> Application : onCreate
+
+note right
+Application的onCreate在这里被回调
+end note
+
+ActivityManagerService -> ActivityStackSupervisor : attachApplicationLocked
+
+ActivityStackSupervisor -> ActivityStackSupervisor : realStartActivityLocked
+
+ActivityStackSupervisor -> IApplicationThread : (ipc)scheduleLaunchActivity
+
+ApplicationThread -> ActivityThread : sendMessage
+
+ActivityThread -> ActivityThread : handleLaunchActivity
+ActivityThread -> ActivityThread : performLaunchActivity
+
+
+ActivityThread -> Instrumentation : newActivity
+create Activity
+
+Instrumentation -> Activity : attach
+
+ActivityThread -> Instrumentation : callActivityOnCreate
+Instrumentation -> Activity : performCreate
+Activity -> Activity : onCreate
+note right
+在这里Activity的onCreate被回调
+end note
+
+Instrumentation -> Activity : onStart
+
+
+ActivityThread -> ActivityThread : handleResumeActivity
+
+ActivityThread -> ActivityThread : performResumeActivity
+
+ActivityThread -> Activity : performResume
+
+Activity -> Instrumentation : callActivityOnResume
+
+Instrumentation -> Activity : onResume
+
+note right
+onResume在这里被回调
+end note
+
+ActivityThread -> Idler : queueIdle
+
+note right
+在performResumeActivity之后
+Looper.myQueue().addIdleHandler(new Idler());
+queueIdle会通过ipc调用ams的activityIdle
+end note
+
+Idler ---> ActivityManagerService : (ipc)activityIdle
+ActivityManagerService  -> ActivityStackSupervisor : activityIdleInternalLocked
+ActivityStackSupervisor -> ActivityStack : stopActivityLocked
+
+note right
+这里会调用Laucher进程的scheduleStopActivity
+最终会调用到Laucher的onStop
+end note
+@enduml
